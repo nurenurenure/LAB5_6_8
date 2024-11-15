@@ -32,6 +32,14 @@ Pixel* Palette::GetPixelByPointer(int index) {
 		return nullptr;
 	}
 }
+// Дружественная функция для печати палитры
+void printPalette(Palette& palette) {
+	std::cout << "Palette contains " << palette.capacity << " pixels:" << std::endl;
+	for (int i = 0; i < palette.capacity; ++i) {
+		std::cout << "Pixel " << i << ": ";
+		palette.pixels[i].print();
+	}
+}
 
 Pixel& Palette:: GetPixelByReference(int index) {
 	if (index >= 0 && index < capacity) {
@@ -198,6 +206,26 @@ int main()
 	pixelRef.SetB(125);
 	cout << "Pixel (REFERENCE): ";
 	pixelRef.print();
+
+	Palette palette2(3);  // Создаем палитру из 3 пикселей
+
+	// Изменим значения некоторых пикселей
+	Pixel* pixelPtr1 = palette2.GetPixelByPointer(0);
+	if (pixelPtr1) {
+		pixelPtr1->SetR(50);
+		pixelPtr1->SetG(100);
+		pixelPtr1->SetB(100);
+	}
+
+	Pixel* pixelPtr2 = palette2.GetPixelByPointer(1);
+	if (pixelPtr2) {
+		pixelPtr2->SetR(14);
+		pixelPtr2->SetG(18);
+		pixelPtr2->SetB(56);
+	}
+
+	// Используем дружественную функцию для вывода всей палитры
+	printPalette(palette2);
 
 
 

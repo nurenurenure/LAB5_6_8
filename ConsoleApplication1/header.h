@@ -45,8 +45,11 @@ public:
 	void Clear();
 	Pixel* GetPixelByPointer(int index);
 	Pixel& GetPixelByReference(int index);
+	friend void printPalette(Palette& palette);
 
 };
+// Дружественная функция для печати палитры
+void printPalette(Palette& palette);
 
 class Filter {
 public:
