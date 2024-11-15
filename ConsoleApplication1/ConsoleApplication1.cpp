@@ -5,7 +5,7 @@ using namespace std;
 
 
 //работа с ПАЛИТРОЙ
-Palette::Palette(int InitialCapacity) : capacity(InitialCapacity) {
+Palette::Palette(int InitialCapacity, const std::string& paletteName) : capacity(InitialCapacity), name(paletteName) {
 	paletteCount++;
 	pixels = new Pixel[capacity];
 }
@@ -13,6 +13,12 @@ Palette::Palette(int InitialCapacity) : capacity(InitialCapacity) {
 Palette::~Palette() {
 	paletteCount--;
 	delete[] pixels;
+}
+void Palette::setName(string& paletteName) {
+	name = paletteName;
+}
+string Palette::getName(){
+	return name;
 }
 
 int Palette::GetCapacity() {
@@ -310,6 +316,19 @@ int main()
 	catch (const std::out_of_range& e) {
 		std::cout << "Pixel out of size\n";
 	}
+
+	//работа со строками
+	Palette palette6(5, "My Favorite colors");
+	string string1 = palette6.getName();
+	//Конкатенация строки
+	string text = "hello";
+	string1 += text;
+	std::cout << "Updated string1: " << string1 << "\n";
+	//Выделение подстроки
+	std::cout << "Updated string1: " << string1.substr(0, 3) << "\n";
+
+
+
 
 
 }

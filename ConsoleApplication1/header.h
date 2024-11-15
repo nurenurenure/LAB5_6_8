@@ -41,11 +41,14 @@ class Palette {
 private:
 	Pixel* pixels;
 	int capacity;
+	string name;
 	static int paletteCount;
 public:
-	Palette(int InitCapaity = 10);
+	Palette(int InitCapaity = 10, const string& paletteName = "Default Palette");
 	Palette(Palette& other);
 	~Palette();
+	void setName(string& paletteName);
+	string getName();
 	Palette& operator+=(Pixel newPixel);
 	int GetCapacity();
 	void Clear();
