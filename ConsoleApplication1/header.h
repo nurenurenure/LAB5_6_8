@@ -1,5 +1,7 @@
 #include <string.h>
+#include <iostream>
 #include <cstdint>
+using namespace std;
 class Pixel {
 private:
 	int8_t  R;
@@ -39,6 +41,7 @@ class Palette {
 private:
 	Pixel* pixels;
 	int capacity;
+	static int paletteCount;
 public:
 	Palette(int InitCapaity = 10);
 	Palette(Palette& other);
@@ -50,6 +53,9 @@ public:
 	Pixel& GetPixelByReference(int index);
 	friend void printPalette(Palette& palette);
 	void print();
+	static int getPaletteCount() {
+		return paletteCount;
+	}
 
 };
 // Дружественная функция для печати палитры

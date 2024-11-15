@@ -6,10 +6,12 @@ using namespace std;
 
 //работа с ПАЛИТРОЙ
 Palette::Palette(int InitialCapacity) : capacity(InitialCapacity) {
+	paletteCount++;
 	pixels = new Pixel[capacity];
 }
 
 Palette::~Palette() {
+	paletteCount--;
 	delete[] pixels;
 }
 
@@ -86,10 +88,10 @@ int Image::GetWidth() {
 }
 
 Pixel Image::GetPixel(int x, int y) {
-	if (x >= 0 && x < width && y >= 0 && y < height) {
-		return pixels[y][x];
+	if (x < 0 || x >= width || y < 0 || y >= height) {
+		throw std::out_of_range("Pixel coordinates out of bounds");
 	}
-	return Pixel();  // Возвращаем черный пиксель по умолчанию
+	return pixels[y][x];
 }
 void Image::SetPixel(int x, int y, Pixel& pixel) {
 	if (x >= 0 && x < width && y >= 0 && y < height) {
@@ -214,6 +216,7 @@ Image Gradient::Apply(Image image) {
 		}
 		return image;
 }
+int Palette::paletteCount = 0;
 
 
 
@@ -286,6 +289,27 @@ int main()
 	palette3 += Pixel(70, 80, 90);
 
 	palette3.print();
+
+	Palette palette_4(3);
+
+	Palette palette_5(2);
+
+	std::cout << "Current palette count: " << Palette::getPaletteCount() << "\n";
+
+	try {
+		Image image10(3, 3); // Создаем изображение 3x3
+		Pixel redPixel(255, 0, 0);
+
+		// Установка пикселя в пределах изображения
+		image10.SetPixel(1, 1, redPixel);
+		std::cout << "Pixel set successfully at (1, 1)\n";
+
+		// Попытка установить пиксель за пределами изображения
+		image10.SetPixel(6, 6, redPixel);
+	}
+	catch (const std::out_of_range& e) {
+		std::cout << "Pixel out of size\n";
+	}
 
 
 }
