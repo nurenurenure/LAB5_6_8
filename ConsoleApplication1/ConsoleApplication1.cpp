@@ -327,8 +327,32 @@ int main()
 	//Выделение подстроки
 	std::cout << "Updated string1: " << string1.substr(0, 3) << "\n";
 
+	// Используем std::shared_ptr
+	{
+		std::shared_ptr<Pixel> sharedPixel1 = std::make_shared<Pixel>(0, 0, 0);
+		{
+			std::shared_ptr<Pixel> sharedPixel2 = sharedPixel1; // Совместное владение
+			std::cout << "Inside nested block:\n";
+			sharedPixel2->print();
+		} // sharedPixel2 уничтожается, но sharedPixel1 еще владеет объектом
+		std::cout << "Outside nested block:\n";
+		sharedPixel1->print();
+	} // sharedPixel1 уничтожается, объект удаляется
 
+	std::cout << "==========================\n";
+	{
+		std::unique_ptr<Pixel> uniquePixel = std::make_unique<Pixel>(0, 0, 0);
+		uniquePixel->print();
 
+		// Передача владения через std::move
+		std::unique_ptr<Pixel> anotherUniquePixel = std::move(uniquePixel);
+		if (!uniquePixel) {
+			std::cout << "uniquePixel is now null after ownership transfer.\n";
+		}
+		anotherUniquePixel->print();
+	} // anotherUniquePixel уничтожается, объект удаляется
+
+	std::cout << "==========================\n";
 
 
 }
