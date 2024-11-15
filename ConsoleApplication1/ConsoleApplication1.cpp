@@ -5,7 +5,7 @@ using namespace std;
 
 
 //работа с ПАЛИТРОЙ
-Palette::Palette(int InitialCapacity) : size(0), capacity(InitialCapacity) {
+Palette::Palette(int InitialCapacity) : capacity(InitialCapacity) {
 	pixels = new Pixel[capacity];
 }
 
@@ -13,16 +13,12 @@ Palette::~Palette() {
 	delete[] pixels;
 }
 
-int Palette::GetSize() {
-	return size;
-}
-
 int Palette::GetCapacity() {
 	return capacity;
 }
 
 void Palette::Clear() {
-	size = 0;
+	capacity = 0;
 }
 Pixel* Palette::GetPixelByPointer(int index) {
 	if (index >= 0 && index < capacity) {
@@ -49,7 +45,24 @@ Pixel& Palette:: GetPixelByReference(int index) {
 		return pixels[0];
 	}
 }
+Palette& Palette::operator+=(Pixel newPixel) {
+	pixels[capacity++] = newPixel;
+	return *this;
+}
+void Palette::print(){
+	std::cout << "Palette contains " << capacity << " pixels:" << std::endl;
+	for (int i = 0; i < capacity; ++i) {
+		std::cout << "Pixel " << i << ": ";
+		pixels[i].print();
+	}
+}
 
+Palette::Palette(Palette& other) : capacity(other.capacity) {
+	pixels = new Pixel[capacity];
+	for (int i = 0; i < capacity; ++i) {
+		pixels[i] = other.pixels[i];
+	}
+}
 //работа с ИЗОБРАЖЕНИЕМ
 Image::Image(int w, int h) : width(w), height(h) {
 	pixels = new Pixel* [height];
@@ -83,6 +96,15 @@ void Image::SetPixel(int x, int y, Pixel& pixel) {
 		pixels[y][x] = pixel;
 	}
 }
+
+Image::Image(Image& other) : width(other.width), height(other.height) {
+	for (int i = 0; i < height; ++i) {
+		for (int j = 0; j < width; ++j) {
+			pixels[i][j] = other.pixels[i][j];
+		}
+	}
+}
+
 
 
 void Image::Resize(int newWidth, int newHeight) {
@@ -128,6 +150,12 @@ void Pixel::print() {
 	std::cout << "Pixel(R: " << static_cast<int>(R)
 		<< ", G: " << static_cast<int>(G)
 		<< ", B: " << static_cast<int>(B) << ")" << std::endl;
+}
+Pixel Pixel:: operator+(Pixel& other) {
+	return Pixel(R + other.R, G + other.G, B + other.B);
+}
+bool Pixel:: operator==(Pixel& other){
+	return R == other.R && G == other.G && B == other.B;
 }
 
 //работа с фильтрами
@@ -227,6 +255,37 @@ int main()
 	// Используем дружественную функцию для вывода всей палитры
 	printPalette(palette2);
 
+	//==
+	Pixel p1(10, 20, 30);
+	Pixel p2(10, 20, 30);
+	Pixel p3(40, 50, 60);
+
+	if (p1 == p2) {
+		std::cout << "p1 and p2 are equal" << std::endl;
+	}
+	else {
+		std::cout << "p1 and p2 are not equal" << std::endl;
+	}
+
+	if (p1 == p3) {
+		std::cout << "p1 and p3 are equal" << std::endl;
+	}
+	else {
+		std::cout << "p1 and p3 are not equal" << std::endl;
+	}
+	//+
+	Pixel p4(10, 20, 30);
+	Pixel p5(40, 50, 60);
+	Pixel p6 = p4 + p5;
+	p6.print();
+	//+=
+	Palette palette3(0);
+
+	palette3 += Pixel(10, 20, 30);
+	palette3 += Pixel(40, 50, 60);
+	palette3 += Pixel(70, 80, 90);
+
+	palette3.print();
 
 
 }

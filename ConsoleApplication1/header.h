@@ -6,6 +6,8 @@ private:
 	int8_t  G;
 	int8_t  B;
 public:
+	Pixel operator+(Pixel& other);
+	bool operator==(Pixel& other);
 	Pixel(int8_t  r = 0, int8_t  g = 0, int8_t  b = 0);
 	int8_t  GetR();
 	int8_t  GetG();
@@ -24,6 +26,7 @@ private:
 	Pixel** pixels;
 public:
 	Image(int width, int height);
+	Image(Image& other);
 	~Image();
 	int GetHeight();
 	int GetWidth();
@@ -35,17 +38,18 @@ public:
 class Palette {
 private:
 	Pixel* pixels;
-	int size;
 	int capacity;
 public:
 	Palette(int InitCapaity = 10);
+	Palette(Palette& other);
 	~Palette();
-	int GetSize();
+	Palette& operator+=(Pixel newPixel);
 	int GetCapacity();
 	void Clear();
 	Pixel* GetPixelByPointer(int index);
 	Pixel& GetPixelByReference(int index);
 	friend void printPalette(Palette& palette);
+	void print();
 
 };
 // Дружественная функция для печати палитры
@@ -58,6 +62,9 @@ public:
 
 class BlackAndWhiteFilter: public Filter {
 public:
+	BlackAndWhiteFilter() : Filter() {
+		std::cout << "BlackAndWhiteFilter constructor called." << std::endl;
+	}
 	Image Apply(Image image);
 };
 
