@@ -212,9 +212,9 @@ Image Gradient::Apply(Image image) {
 				float ratio = static_cast<float>(x) / (width - 1);
 
 				// Вычисляем цвета пикселей на основе отношения
-				int red = static_cast<int>(StartColor.GetR() + ratio * (EndColor.GetR() - StartColor.GetR()));
-				int green = static_cast<int>(StartColor.GetG() + ratio * (EndColor.GetG() - StartColor.GetG()));
-				int blue = static_cast<int>(StartColor.GetB() + ratio * (EndColor.GetB() - StartColor.GetB()));
+				int red = StartColor.GetR() + ratio * (EndColor.GetR() - StartColor.GetR());
+				int green = StartColor.GetG() + ratio * (EndColor.GetG() - StartColor.GetG());
+				int blue = StartColor.GetB() + ratio * (EndColor.GetB() - StartColor.GetB());
 				Pixel newpixel(red, green, blue);
 
 				image.SetPixel(x, y, newpixel);
@@ -351,8 +351,4 @@ int main()
 		}
 		anotherUniquePixel->print();
 	} // anotherUniquePixel уничтожается, объект удаляется
-
-	std::cout << "==========================\n";
-
-
 }
