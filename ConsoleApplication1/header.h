@@ -1,6 +1,9 @@
 #include <string.h>
 #include <iostream>
 #include <cstdint>
+#include <iostream>
+#include <algorithm>
+#include <vector>
 using namespace std;
 class Pixel {
 private:
@@ -10,7 +13,7 @@ private:
 public:
 	Pixel operator+(Pixel& other);
 	bool operator==(Pixel& other);
-	Pixel(int8_t  r = 0, int8_t  g = 0, int8_t  b = 0);
+	Pixel(int r = 0, int g = 0, int b = 0) : R(r), G(g), B(b) {}
 	int8_t  GetR();
 	int8_t  GetG();
 	int8_t  GetB();
@@ -19,6 +22,10 @@ public:
 	void SetB(int8_t  b);
 	int8_t  GetGray();
 	void print();
+	static int clamp(int value) {
+		return std::max(0, std::min(255, value));
+	}
+
 };
 
 class Image {
@@ -34,7 +41,7 @@ public:
 	int GetWidth();
 	Pixel GetPixel(int x, int y);
 	void Resize(int NewW, int NewH);
-	void SetPixel(int x, int y, Pixel& pixel);
+	void SetPixel(int x, int y, Pixel pixel);
 };
 
 class Palette {
@@ -66,7 +73,12 @@ void printPalette(Palette& palette);
 
 class Filter {
 public:
-	Image Apply(Image image);
+	virtual void apply(Image& image) {
+		std::cout << "Applying base filter\n";
+	}
+	void baseApply(Image& image) {
+		apply(image);
+	}
 };
 
 class BlackAndWhiteFilter: public Filter {
@@ -79,12 +91,16 @@ public:
 
 class BrightnessFilter : public Filter {
 private:
-	int brightness;
+	int brightnessLevel;
 
 public:
-	BrightnessFilter(int level);
-	Image Apply(Image image);
+	BrightnessFilter(int level) : brightnessLevel(level) {}
+
+	void apply(Image& image) override {
+		std::cout << "Applying brightness filter with level: " << brightnessLevel << "\n";
+	}
 };
+
 
 class PhotoEditor {
 private:

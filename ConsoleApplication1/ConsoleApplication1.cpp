@@ -99,7 +99,7 @@ Pixel Image::GetPixel(int x, int y) {
 	}
 	return pixels[y][x];
 }
-void Image::SetPixel(int x, int y, Pixel& pixel) {
+void Image::SetPixel(int x, int y, Pixel pixel) {
 	if (x >= 0 && x < width && y >= 0 && y < height) {
 		pixels[y][x] = pixel;
 	}
@@ -141,7 +141,6 @@ void Image::Resize(int newWidth, int newHeight) {
 }
 
 //Работа с классом Pixel
-Pixel::Pixel(int8_t  r, int8_t  g, int8_t  b) : R(r), G(g), B(b) {}
 
 int8_t  Pixel::GetR() { return R; }
 int8_t  Pixel::GetG() { return G; }
@@ -179,22 +178,7 @@ Image BlackAndWhiteFilter::Apply(Image image) {
 	return image;
 }
 
-BrightnessFilter::BrightnessFilter(int level) : brightness(level) {}
 
-Image BrightnessFilter::Apply(Image image) {
-	for (int y = 0; y < image.GetHeight(); y++) {
-		for (int x = 0; x < image.GetWidth(); x++) {
-			Pixel pixel = image.GetPixel(x, y);
-
-			int r = std::max(0, std::min(255, pixel.GetR() + brightness));
-			int g = std::max(0, std::min(255, pixel.GetG() + brightness));
-			int b = std::max(0, std::min(255, pixel.GetB() + brightness));
-			Pixel newpixel(r, g, b);
-			image.SetPixel(x, y, newpixel);
-		}
-	}
-	return image;
-}
 //методы класса PhotoEditor
 void PhotoEditor::ShowImageInfo() {
 	std::cout << "Image width: " << image.GetWidth() << ", height: " << image.GetHeight() << std::endl;
@@ -228,127 +212,24 @@ int Palette::paletteCount = 0;
 
 int main()
 {
-	Palette palette(5);  
-	// указатель
-	Pixel* pixelPtr = palette.GetPixelByPointer(2);
-	pixelPtr->SetR(5);
-	pixelPtr->SetG(5);
-	pixelPtr->SetB(5);
-	cout << "Pixel by pointer: ";
-	pixelPtr->print();
-	// ссылка
-	Pixel& pixelRef = palette.GetPixelByReference(3);
-	pixelRef.SetR(50);
-	pixelRef.SetG(75);
-	pixelRef.SetB(125);
-	cout << "Pixel (REFERENCE): ";
-	pixelRef.print();
+	// Создаем изображение
+	Image image(3, 3);
+	image.SetPixel(0, 0, Pixel(100, 150, 200));
+	image.SetPixel(1, 0, Pixel(120, 170, 220));
+	image.SetPixel(2, 0, Pixel(140, 190, 240));
 
-	Palette palette2(3);  // Создаем палитру из 3 пикселей
+	// Используем базовый класс
+	Filter baseFilter;
+	baseFilter.baseApply(image);
+	// Используем дочерний класс BrightnessFilter через базовый указатель
+	Filter* brightnessFilter = new BrightnessFilter(50);
+	brightnessFilter->baseApply(image);  // Вызов через базовый класс
+	delete brightnessFilter;
 
-	// Изменим значения некоторых пикселей
-	Pixel* pixelPtr1 = palette2.GetPixelByPointer(0);
-	if (pixelPtr1) {
-		pixelPtr1->SetR(50);
-		pixelPtr1->SetG(100);
-		pixelPtr1->SetB(100);
-	}
+	// Пример работы с не виртуальным методом (если apply не виртуальный)
+	Filter* simpleFilter = new Filter();
+	simpleFilter->apply(image); // Всегда вызов базового метода
+	delete simpleFilter;
 
-	Pixel* pixelPtr2 = palette2.GetPixelByPointer(1);
-	if (pixelPtr2) {
-		pixelPtr2->SetR(14);
-		pixelPtr2->SetG(18);
-		pixelPtr2->SetB(56);
-	}
-
-	// Используем дружественную функцию для вывода всей палитры
-	printPalette(palette2);
-
-	//==
-	Pixel p1(10, 20, 30);
-	Pixel p2(10, 20, 30);
-	Pixel p3(40, 50, 60);
-
-	if (p1 == p2) {
-		std::cout << "p1 and p2 are equal" << std::endl;
-	}
-	else {
-		std::cout << "p1 and p2 are not equal" << std::endl;
-	}
-
-	if (p1 == p3) {
-		std::cout << "p1 and p3 are equal" << std::endl;
-	}
-	else {
-		std::cout << "p1 and p3 are not equal" << std::endl;
-	}
-	//+
-	Pixel p4(10, 20, 30);
-	Pixel p5(40, 50, 60);
-	Pixel p6 = p4 + p5;
-	p6.print();
-	//+=
-	Palette palette3(0);
-
-	palette3 += Pixel(10, 20, 30);
-	palette3 += Pixel(40, 50, 60);
-	palette3 += Pixel(70, 80, 90);
-
-	palette3.print();
-
-	Palette palette_4(3);
-
-	Palette palette_5(2);
-
-	std::cout << "Current palette count: " << Palette::getPaletteCount() << "\n";
-
-	try {
-		Image image10(3, 3); // Создаем изображение 3x3
-		Pixel redPixel(255, 0, 0);
-
-		// Установка пикселя в пределах изображения
-		image10.SetPixel(1, 1, redPixel);
-		std::cout << "Pixel set successfully at (1, 1)\n";
-
-		// Попытка установить пиксель за пределами изображения
-		image10.SetPixel(6, 6, redPixel);
-	}
-	catch (const std::out_of_range& e) {
-		std::cout << "Pixel out of size\n";
-	}
-
-	//работа со строками
-	Palette palette6(5, "My Favorite colors");
-	string string1 = palette6.getName();
-	//Конкатенация строки
-	string text = "hello";
-	string1 += text;
-	std::cout << "Updated string1: " << string1 << "\n";
-	//Выделение подстроки
-	std::cout << "Updated string1: " << string1.substr(0, 3) << "\n";
-
-	// Используем std::shared_ptr
-	{
-		std::shared_ptr<Pixel> sharedPixel1 = std::make_shared<Pixel>(0, 0, 0);
-		{
-			std::shared_ptr<Pixel> sharedPixel2 = sharedPixel1; // Совместное владение
-			std::cout << "Inside nested block:\n";
-			sharedPixel2->print();
-		} // sharedPixel2 уничтожается, но sharedPixel1 еще владеет объектом
-		std::cout << "Outside nested block:\n";
-		sharedPixel1->print();
-	} // sharedPixel1 уничтожается, объект удаляется
-
-	std::cout << "==========================\n";
-	{
-		std::unique_ptr<Pixel> uniquePixel = std::make_unique<Pixel>(0, 0, 0);
-		uniquePixel->print();
-
-		// Передача владения через std::move
-		std::unique_ptr<Pixel> anotherUniquePixel = std::move(uniquePixel);
-		if (!uniquePixel) {
-			std::cout << "uniquePixel is now null after ownership transfer.\n";
-		}
-		anotherUniquePixel->print();
-	} // anotherUniquePixel уничтожается, объект удаляется
+	return 0;
 }
