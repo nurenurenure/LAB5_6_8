@@ -25,6 +25,9 @@ public:
 	static int clamp(int value) {
 		return std::max(0, std::min(255, value));
 	}
+	void display() {
+		std::cout << "(" << R << ", " << G << ", " << B << ")";
+	}
 
 };
 
@@ -35,13 +38,37 @@ private:
 	Pixel** pixels;
 public:
 	Image(int width, int height);
-	Image(Image& other);
 	~Image();
 	int GetHeight();
 	int GetWidth();
 	Pixel GetPixel(int x, int y);
 	void Resize(int NewW, int NewH);
 	void SetPixel(int x, int y, Pixel pixel);
+	// Поверхностное копирование
+	Image(Image& other) : width(other.width), height(other.height), pixels(other.pixels) {
+		// Здесь копируется только указатель на массив, без создания нового массива
+	}
+
+	/**************Глубокое копирование
+	Image(Image& other) : width(other.width), height(other.height) {
+		pixels = new Pixel * [width];
+		for (int i = 0; i < width; ++i) {
+			pixels[i] = new Pixel[height];
+			for (int j = 0; j < height; ++j) {
+				pixels[i][j] = other.pixels[i][j];
+			}
+		}
+	}
+	*******/
+	void display() {
+		for (int i = 0; i < width; ++i) {
+			for (int j = 0; j < height; ++j) {
+				pixels[i][j].display();
+				std::cout << " ";
+			}
+			std::cout << std::endl;
+		}
+	}
 };
 
 class Palette {
@@ -72,21 +99,31 @@ public:
 void printPalette(Palette& palette);
 
 class Filter {
+protected:
+	std::string name;
 public:
-	virtual void apply(Image& image) {
-		std::cout << "Applying base filter\n";
+	// Конструктор базового класса
+	Filter(const std::string& filterName) : name(filterName) {
+		std::cout << "Filter base class constructor called: " << name << std::endl;
 	}
-	void baseApply(Image& image) {
-		apply(image);
+	virtual ~Filter() {
+		std::cout << "Base Filter destructor called.\n";
+	}
+	Filter(const Filter&) = delete;
+	Filter& operator=(Filter& other) {
+		if (this != &other) {
+			name = other.name;
+		}
+		std::cout << "Base Filter assignment operator called.\n";
+		return *this;
+	}
+
+	virtual void apply() {
+		std::cout << "Applying base filter: " << name << std::endl;
 	}
 };
 
 class BlackAndWhiteFilter: public Filter {
-public:
-	BlackAndWhiteFilter() : Filter() {
-		std::cout << "BlackAndWhiteFilter constructor called." << std::endl;
-	}
-	Image Apply(Image image);
 };
 
 class BrightnessFilter : public Filter {
@@ -94,10 +131,27 @@ private:
 	int brightnessLevel;
 
 public:
-	BrightnessFilter(int level) : brightnessLevel(level) {}
+	// Конструктор производного класса
+	BrightnessFilter(const std::string& filterName, int level)
+		: Filter(filterName), brightnessLevel(level) {
+		std::cout << "BrightnessFilter derived class constructor called with level: "
+			<< brightnessLevel << std::endl;
+	}
 
-	void apply(Image& image) override {
-		std::cout << "Applying brightness filter with level: " << brightnessLevel << "\n";
+	void apply(){
+		std::cout << "Applying brightness filter: " << name
+			<< " with level " << brightnessLevel << std::endl;
+	}
+	BrightnessFilter& operator=(Filter& base) {
+		if (this != &base) {
+			// Вызов оператора присваивания базового класса
+			Filter::operator=(base);
+
+			// Логика для производного класса
+			brightnessLevel = 0; // Сбросить уровень яркости
+		}
+		std::cout << "Derived BrightnessFilter assignment operator called.\n";
+		return *this;
 	}
 };
 

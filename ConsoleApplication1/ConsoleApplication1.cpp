@@ -105,14 +105,6 @@ void Image::SetPixel(int x, int y, Pixel pixel) {
 	}
 }
 
-Image::Image(Image& other) : width(other.width), height(other.height) {
-	for (int i = 0; i < height; ++i) {
-		for (int j = 0; j < width; ++j) {
-			pixels[i][j] = other.pixels[i][j];
-		}
-	}
-}
-
 
 
 void Image::Resize(int newWidth, int newHeight) {
@@ -166,17 +158,6 @@ bool Pixel:: operator==(Pixel& other){
 }
 
 //работа с фильтрами
-Image BlackAndWhiteFilter::Apply(Image image) {
-	for (int y = 0; y < image.GetHeight(); y++) {
-		for (int x = 0; x < image.GetWidth(); x++) {
-			Pixel pixel = image.GetPixel(x, y);
-			int gray = pixel.GetGray();
-			Pixel grayPixel(gray, gray, gray);
-			image.SetPixel(x, y, grayPixel);
-		}
-	}
-	return image;
-}
 
 
 //методы класса PhotoEditor
@@ -212,24 +193,18 @@ int Palette::paletteCount = 0;
 
 int main()
 {
-	// Создаем изображение
-	Image image(3, 3);
-	image.SetPixel(0, 0, Pixel(100, 150, 200));
-	image.SetPixel(1, 0, Pixel(120, 170, 220));
-	image.SetPixel(2, 0, Pixel(140, 190, 240));
+	// Создаем объекты базового и производного классов
+	Filter baseFilter("Base Filter");
+	BrightnessFilter brightnessFilter("Initial Brightness Filter", 5);
 
-	// Используем базовый класс
-	Filter baseFilter;
-	baseFilter.baseApply(image);
-	// Используем дочерний класс BrightnessFilter через базовый указатель
-	Filter* brightnessFilter = new BrightnessFilter(50);
-	brightnessFilter->baseApply(image);  // Вызов через базовый класс
-	delete brightnessFilter;
+	std::cout << "\nBefore assignment:\n";
+	brightnessFilter.apply();
 
-	// Пример работы с не виртуальным методом (если apply не виртуальный)
-	Filter* simpleFilter = new Filter();
-	simpleFilter->apply(image); // Всегда вызов базового метода
-	delete simpleFilter;
+	// Присваиваем объект базового класса объекту производного класса
+	brightnessFilter = baseFilter;
+
+	std::cout << "\nAfter assignment:\n";
+	brightnessFilter.apply();
 
 	return 0;
 }
