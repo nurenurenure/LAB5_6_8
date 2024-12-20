@@ -192,19 +192,20 @@ int Palette::paletteCount = 0;
 
 
 int main()
-{
-	// Создаем объекты базового и производного классов
-	Filter baseFilter("Base Filter");
-	BrightnessFilter brightnessFilter("Initial Brightness Filter", 5);
+{    // Контейнер для хранения указателей на базовый и производные классы
+	std::vector<std::shared_ptr<Filter>> filters;
 
-	std::cout << "\nBefore assignment:\n";
-	brightnessFilter.apply();
-
-	// Присваиваем объект базового класса объекту производного класса
-	brightnessFilter = baseFilter;
-
-	std::cout << "\nAfter assignment:\n";
-	brightnessFilter.apply();
-
-	return 0;
+	// Добавляем объекты в контейнер
+	filters.push_back(std::make_shared<Filter>());
+	filters.push_back(std::make_shared<BrightnessFilter>(5));
+	filters.push_back(std::make_shared<BrightnessFilter>(10));
+	// Сортируем BrightnessFilter по уровню яркости (level)
+	std::sort(filters.begin(), filters.end(), [](const std::shared_ptr<Filter>& a, const std::shared_ptr<Filter>& b) {
+		auto brightA = std::dynamic_pointer_cast<BrightnessFilter>(a);
+		auto brightB = std::dynamic_pointer_cast<BrightnessFilter>(b);
+		if (brightA && brightB) {
+			return brightA->getLevel() < brightB->getLevel();
+		}
+		return false; // Базовые фильтры не сравниваются
+		});
 }

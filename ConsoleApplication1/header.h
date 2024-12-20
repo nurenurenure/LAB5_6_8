@@ -128,30 +128,15 @@ class BlackAndWhiteFilter: public Filter {
 
 class BrightnessFilter : public Filter {
 private:
-	int brightnessLevel;
+	int level;
 
 public:
-	// Конструктор производного класса
-	BrightnessFilter(const std::string& filterName, int level)
-		: Filter(filterName), brightnessLevel(level) {
-		std::cout << "BrightnessFilter derived class constructor called with level: "
-			<< brightnessLevel << std::endl;
-	}
-
+	BrightnessFilter(int lvl) : level(lvl) {}
 	void apply(){
-		std::cout << "Applying brightness filter: " << name
-			<< " with level " << brightnessLevel << std::endl;
+		std::cout << "Brightness Filter applied with level " << level << "\n";
 	}
-	BrightnessFilter& operator=(Filter& base) {
-		if (this != &base) {
-			// Вызов оператора присваивания базового класса
-			Filter::operator=(base);
-
-			// Логика для производного класса
-			brightnessLevel = 0; // Сбросить уровень яркости
-		}
-		std::cout << "Derived BrightnessFilter assignment operator called.\n";
-		return *this;
+	int getLevel(){
+		return level;
 	}
 };
 
