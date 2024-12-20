@@ -99,28 +99,11 @@ public:
 void printPalette(Palette& palette);
 
 class Filter {
-protected:
-	std::string name;
 public:
-	// Конструктор базового класса
-	Filter(const std::string& filterName) : name(filterName) {
-		std::cout << "Filter base class constructor called: " << name << std::endl;
+	virtual void apply() const {
+		std::cout << "Base Filter applied\n";
 	}
-	virtual ~Filter() {
-		std::cout << "Base Filter destructor called.\n";
-	}
-	Filter(const Filter&) = delete;
-	Filter& operator=(Filter& other) {
-		if (this != &other) {
-			name = other.name;
-		}
-		std::cout << "Base Filter assignment operator called.\n";
-		return *this;
-	}
-
-	virtual void apply() {
-		std::cout << "Applying base filter: " << name << std::endl;
-	}
+	virtual ~Filter() = default;
 };
 
 class BlackAndWhiteFilter: public Filter {
