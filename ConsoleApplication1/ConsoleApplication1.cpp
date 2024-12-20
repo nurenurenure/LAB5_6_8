@@ -208,4 +208,19 @@ int main()
 		}
 		return false; // Базовые фильтры не сравниваются
 		});
+
+	// Поиск первого BrightnessFilter с level = 10
+	auto it = std::find_if(filters.begin(), filters.end(), [](const std::shared_ptr<Filter>& f) {
+		auto bright = std::dynamic_pointer_cast<BrightnessFilter>(f);
+		return bright && bright->getLevel() == 10;
+		});
+
+	if (it != filters.end()) {
+		std::cout << "Found BrightnessFilter with level 10\n";
+	}
+	else {
+		std::cout << "BrightnessFilter with level 10 not found\n";
+	}
+
+	return 0;
 }
